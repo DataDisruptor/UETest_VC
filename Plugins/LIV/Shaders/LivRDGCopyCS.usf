@@ -1,0 +1,25 @@
+/*=============================================================================
+ LivRDGCopyCS.usf: Copy a resource via compute shader.
+ =============================================================================*/
+
+#include "/Engine/Private/Common.ush"
+
+/* Declaration of all variables
+=============================================================================*/
+Texture2D<VALUE_TYPE> SrcResource;
+RWTexture2D<VALUE_TYPE> DstResource;
+uint3 Dimensions; // The total x,y,z number of texels in the copy region
+
+#define COMP(a,b) (((a).x < (b).x) && ((a).y < (b).y) && ((a).z < (b).z))
+
+/* Compute shader
+=============================================================================*/
+
+[numthreads(THREADGROUPSIZE_X, THREADGROUPSIZE_Y, THREADGROUPSIZE_Z)]
+void CopyTextureCS(uint3 Position : SV_DispatchThreadID)
+{
+	if (COMP(Position, Dimensions))
+	{
+		DstResource[Position.xy] = SrcResource[Position.xy];
+	}
+}

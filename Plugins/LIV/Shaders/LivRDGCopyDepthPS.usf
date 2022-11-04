@@ -1,0 +1,32 @@
+/*=============================================================================
+ LivRDGCopyPS.usf: Copies input, mainly for converting from floating point fmt.
+ =============================================================================*/
+
+#include "/Engine/Public/Platform.ush"
+#include "/Engine/Private/Common.ush"
+#include "/Engine/Private/SceneTexturesCommon.ush"
+#include "/Engine/Generated/GeneratedUniformBuffers.ush" 
+#include "/Engine/Private/SceneTextureParameters.ush"
+#include "/Engine/Private/DeferredShadingCommon.ush"        // GetGBufferData()
+#include "/Engine/Private/TonemapCommon.ush"
+
+
+/* Declaration of all variables
+=============================================================================*/
+
+
+/* Pixel shader
+=============================================================================*/
+
+float4 MainPS(
+	noperspective float4 UVAndScreenPos : TEXCOORD0,
+	in float4 SVPos : SV_POSITION
+	) : SV_Target0
+{
+	float2 ScreenUV = SvPositionToBufferUV(SVPos);
+
+	// @TODO: should we encode this to keep precision?
+	float SceneDepth = CalcSceneDepth(ScreenUV);
+
+	return float4(SceneDepth, SceneDepth, SceneDepth, 1.0f);
+}

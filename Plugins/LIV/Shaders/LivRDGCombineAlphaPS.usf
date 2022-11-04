@@ -1,0 +1,26 @@
+/*=============================================================================
+ LivCombineAlphaPS.usf: Combine RGB of one image and (inverted) Alpha of another
+ =============================================================================*/
+
+#include "/Engine/Public/Platform.ush"
+
+/* Declaration of all variables
+=============================================================================*/
+Texture2D InputColorTexture;
+SamplerState InputColorSampler;
+
+Texture2D InputAlphaTexture;
+SamplerState InputAlphaSampler;
+
+/* Pixel shader
+=============================================================================*/
+
+float4 MainPS(
+	noperspective float4 UVAndScreenPos : TEXCOORD0
+	) : SV_Target0
+{
+	float4 Color = InputColorTexture.Sample(InputColorSampler, UVAndScreenPos.xy);
+    float4 Alpha = InputAlphaTexture.Sample(InputAlphaSampler, UVAndScreenPos.xy);
+	Color.rgb *= 1.0 - ceil(Alpha.a);
+	return float4(Color.rgb, 1.0 - Alpha.a);
+}

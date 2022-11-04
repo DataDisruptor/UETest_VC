@@ -1,0 +1,32 @@
+/*=============================================================================
+ LivForegroundSegmentationPS.usf: Masks foreground using depth comparison between foreground and background. Mask also written to alpha.
+ =============================================================================*/
+
+#include "/Engine/Public/Platform.ush"
+
+/* Declaration of all variables
+=============================================================================*/
+Texture2D InputBackgroundTexture;
+SamplerState InputBackgroundTextureSampler;
+
+Texture2D InputForegroundTexture;
+SamplerState InputForegroundTextureSampler;
+
+Texture2D OutputTexture;
+SamplerState OutputTextureSampler;
+
+
+/* Pixel shader
+=============================================================================*/
+
+void MainPS(float4 InPosition : SV_POSITION,
+	float2 InUV : TEXCOORD0,
+	out float4 OutColor : SV_Target0)
+{
+    float4 InputBackgroundColor = InputBackgroundTexture.Sample(InputBackgroundTextureSampler, InUV.xy);
+    float InputForegroundDepth = InputForegroundTexture.Sample(InputForegroundTextureSampler, InUV.xy).r;
+	    
+    float Mask = 1 - saturate(InputBackgroundColor.a - InputForegroundDepth);
+
+    OutColor = float4(InputBackgroundColor.rgb * Mask, Mask);
+}

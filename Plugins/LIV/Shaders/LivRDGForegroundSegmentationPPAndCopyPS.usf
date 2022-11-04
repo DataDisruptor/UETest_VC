@@ -1,0 +1,36 @@
+/*=============================================================================
+ LivRDGForegroundSegmentationPPAndCopyPS.usf: Masks foreground using depth comparison
+ between foreground and background. Mask also written to alpha.  Also copies background.
+ =============================================================================*/
+
+#include "/Engine/Public/Platform.ush"
+
+/* Declaration of all variables
+=============================================================================*/
+Texture2D InputBackgroundTexture;
+SamplerState InputBackgroundSampler;
+
+Texture2D InputBackgroundDepthTexture;
+SamplerState InputBackgroundDepthSampler;
+
+Texture2D InputForegroundDepthTexture;
+SamplerState InputForegroundDepthSampler;
+
+/* Pixel shader
+=============================================================================*/
+
+void MainPS(noperspective float4 UVAndScreenPos : TEXCOORD0,
+	out float4 OutForeground : SV_Target0,
+	out float4 OutBackground : SV_Target1)
+{
+	float2 UV = UVAndScreenPos.xy;
+	
+	float4 InputBackgroundColor = InputBackgroundTexture.Sample(InputBackgroundSampler, UV.xy);
+	float BackgroundDepth = InputBackgroundDepthTexture.Sample(InputBackgroundDepthSampler, UV.xy).r;
+    float ForegroundDepth = InputForegroundDepthTexture.Sample(InputForegroundDepthSampler, UV.xy).r;
+	    
+    float Mask = 1 - saturate(BackgroundDepth - ForegroundDepth);
+
+    OutForeground = float4(InputBackgroundColor.rgb * ceil(Mask), Mask);
+	OutBackground = InputBackgroundColor;
+}

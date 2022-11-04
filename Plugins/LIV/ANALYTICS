@@ -1,0 +1,6 @@
+LIV's Unreal SDK collects information in accordance to our privacy policy [ liv.tv/terms/privacy ].
+The LIV App, (not this SDK) is subject to our EULA [ liv.tv/terms/eula ].
+
+No private information about your project is collected.
+
+To opt-out from having analytics collected, uncheck the `Analytics Enabled` checkbox here: Edit > Editor Preferences > Plugins > LIV Editor

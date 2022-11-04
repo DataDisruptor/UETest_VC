@@ -1,0 +1,23 @@
+/*=============================================================================
+ LivRDGInvertAlphaPS.usf: Inverts the alpha channel of the input texture.
+ =============================================================================*/
+
+#include "/Engine/Public/Platform.ush"
+
+/* Declaration of all variables
+=============================================================================*/
+Texture2D InputTexture;
+SamplerState InputSampler;
+
+/* Pixel shader
+=============================================================================*/
+
+float4 MainPS(
+	noperspective float4 UVAndScreenPos : TEXCOORD0
+	) : SV_Target0
+{
+	float2 UV = UVAndScreenPos.xy;
+	float4 InputColor = InputTexture.Sample(InputSampler, UV.xy);
+	InputColor.rgb *= 1.0 - ceil(InputColor.w);
+	return float4(InputColor.xyz, 1.0 - InputColor.w);
+}

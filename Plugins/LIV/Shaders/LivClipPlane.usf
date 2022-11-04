@@ -1,0 +1,49 @@
+// Copyright 2021 LIV Inc. - MIT License
+
+#include "/Engine/Private/Common.ush"
+#include "/Engine/Generated/Material.ush"
+#include "/Engine/Generated/VertexFactory.ush"
+
+struct FClipPlaneInterpolantsVSToPS
+{
+	float4 Position : SV_POSITION;
+	FVertexFactoryInterpolantsVSToPS FactoryInterpolants;
+};
+
+#if VERTEXSHADER
+
+/** Vertex Shader */
+void VSMain(
+	FVertexFactoryInput Input,
+	out FClipPlaneInterpolantsVSToPS Output
+	)
+{
+	ResolvedView = ResolveView();
+
+	FVertexFactoryIntermediates VFIntermediates = GetVertexFactoryIntermediates(Input);
+	float4 WorldPosition = VertexFactoryGetWorldPosition(Input, VFIntermediates);
+	half3x3 TangentToLocal = VertexFactoryGetTangentToLocal(Input, VFIntermediates);
+	
+	FMaterialVertexParameters VertexParameters = GetMaterialVertexParameters(Input, VFIntermediates, WorldPosition.xyz, TangentToLocal);
+
+	Output.FactoryInterpolants = VertexFactoryGetInterpolantsVSToPS(Input, VFIntermediates, VertexParameters);
+
+	//float4 RasterizedWorldPosition = VertexFactoryGetRasterizedWorldPosition(Input, VFIntermediates, WorldPosition);
+	//Output.Position = mul(RasterizedWorldPosition, ResolvedView.TranslatedWorldToClip);
+	//Output.Position = WorldPosition;
+	Output.Position = mul(WorldPosition, ResolvedView.TranslatedWorldToClip);
+}
+
+#elif PIXELSHADER
+
+// Pixel Shader
+void PSMain( 
+	FClipPlaneInterpolantsVSToPS Interpolants,
+	out half4 OutColor	: SV_Target0
+	)
+{
+	ResolvedView = ResolveView();
+
+	OutColor = half4(0.0, 0.0, 0.0, 1.0);
+}
+#endif

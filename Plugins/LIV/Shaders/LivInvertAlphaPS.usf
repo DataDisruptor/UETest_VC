@@ -1,0 +1,24 @@
+/*=============================================================================
+ LivInvertAlphaPS.usf: Inverts the alpha channel of the input texture.
+ =============================================================================*/
+
+#include "/Engine/Public/Platform.ush"
+
+/* Declaration of all variables
+=============================================================================*/
+Texture2D InputTexture;
+SamplerState InputTextureSampler;
+
+Texture2D OutputTexture;
+SamplerState OutputTextureSampler;
+
+/* Pixel shader
+=============================================================================*/
+
+void MainPS(float4 InPosition : SV_POSITION,
+	float2 InUV : TEXCOORD0,
+	out float4 OutColor : SV_Target0)
+{
+	float4 InputColor = InputTexture.Sample(InputTextureSampler, InUV.xy);
+	OutColor = float4(InputColor.xyz, 1.0 - InputColor.w);
+}
